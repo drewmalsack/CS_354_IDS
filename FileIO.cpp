@@ -4,11 +4,14 @@
 
 using namespace std;
 
+
+// Constructor, takes "name" variable which denotes filename
 FileIO::FileIO(string name)
 {
     fileName = name;
 }
 
+// reads given file line by line and outputs them on seperate lines on the command line
 void FileIO::read()
 {
      // Create a text string, which is used to output the text file
@@ -29,6 +32,7 @@ void FileIO::read()
     MyReadFile.close();
 }
 
+// reads given file line by line and outputs lines that contain "pattern" variable to command line
 void FileIO::readLine(string pattern)
 {
      // Create a text string, which is used to output the text file
