@@ -9,12 +9,16 @@ Code, Compile, Run and Debug online from anywhere in world.
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
+#include <vector>
 #include "FileIO.h"
+#include "SysLogFormatter.h"
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
+    SysLogFormatter format;
+    vector <string> myList;
     
     if(argc == 1)
     {
@@ -27,13 +31,13 @@ int main(int argc, char *argv[])
     {
         FileIO file(argv[1]);
     
-        file.read(); 
+        myList = file.read(); 
     }
     else if(argc == 3)
     {
         FileIO file(argv[1]);
     
-        file.readLine(argv[2]);  
+        myList = file.readLine(argv[2]);  
     }
     else
     {
@@ -43,8 +47,10 @@ int main(int argc, char *argv[])
         FileIO file(argv[1]);
         cout << "Pattern to match: " << pattern << endl;
     
-        file.readLine(argv[2]);
+        myList = file.readLine(pattern);
     }
+    
+    format.outputCSV(myList);
    
     return 0;
 }
