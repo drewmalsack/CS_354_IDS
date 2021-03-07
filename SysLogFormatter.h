@@ -5,7 +5,7 @@ class SysLogFormatter
 {
     public:
         SysLogFormatter();
-        void outputCSV(std::vector <std::string>);
+        std::vector <std::string> outputCSV(std::vector <std::string>);
     
     private:
         std::string fileName;

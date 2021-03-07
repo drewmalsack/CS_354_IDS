@@ -16,7 +16,7 @@ vector <string> FileIO::read()
     string myText;
 
     // Read from the text file
-    ifstream MyReadFile(fileName);
+    ifstream MyReadFile(fileName.c_str());
 
     // Use a while loop together with the getline() function to read the file line by line
     while (getline (MyReadFile, myText)) {
@@ -39,7 +39,7 @@ vector <string> FileIO::readLine(string pattern)
     string myText;
 
     // Read from the text file
-    ifstream MyReadFile("filename.txt");
+    ifstream MyReadFile(fileName.c_str());
 
     // Use a while loop together with the getline() function to read the file line by line
     while (getline (MyReadFile, myText)) {

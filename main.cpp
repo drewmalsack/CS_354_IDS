@@ -12,14 +12,17 @@ Code, Compile, Run and Debug online from anywhere in world.
 #include <vector>
 #include "FileIO.h"
 #include "SysLogFormatter.h"
+#include "hash.h"
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
+    
     SysLogFormatter format;
     vector <string> myList;
-    
+    hash table;
+    /*
     if(argc == 1)
     {
         cout << "Usage details-----------------------------------------" << endl;
@@ -51,6 +54,10 @@ int main(int argc, char *argv[])
     }
     
     format.outputCSV(myList);
-   
+    */
+    FileIO file("test.txt");
+    
+    myList = file.read();
+    table.initialHash(myList);
     return 0;
 }

@@ -2,8 +2,11 @@
 #include <stdexcept>
 #include <stdio.h>
 #include <string>
+#include "hash.h"
 
-std::string exec(const char* cmd) {
+
+std::string hash::sysCall(const char* cmd)
+{
     char buffer[128];
     std::string result = "";
     FILE* pipe = popen(cmd, "r");
@@ -20,12 +23,23 @@ std::string exec(const char* cmd) {
     return result;
 }
 
-int main(){
+std::vector <std::string> hash::initialHash(std::vector <std::string> fileList)
+{
+    char* char_arr;
+    std::string str_obj;
+    std::vector <std::string> hashList;
+    while(fileList.size() != 0)
+    {
+        str_obj = "sha256sum "+fileList.back();
+        char_arr = &str_obj[0];
+        hashList.push_back(sysCall(char_arr));
+        fileList.pop_back();
+    }
 
-	char* char_arr;
-    std::string str_obj("sha256sum test.txt");
-    char_arr = &str_obj[0];
-	std::string hello = exec(char_arr);
-	std::cout << hello;
-	return 0;
+    return hashList;
+}
+
+int hash::reHash(std::vector <std::string> fileList)
+{
+    return 1;
 }

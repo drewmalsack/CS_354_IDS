@@ -3,3 +3,7 @@
 .vscode/tasks.json
 test.txt
 output
+a.out
+FileIO.h.gch
+hash.h.gch
+SysLogFormatter.h.gch
