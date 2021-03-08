@@ -1,6 +1,0 @@
-This is random text, this is used to test this stupid project
-this is another line of text, search for "this is" with the program to get these first two lines
-i dont care about line three
-line four should be longer though, i need to make sure this shit works
-random pattern to match "line three"
-line four should be longer... fuck this.

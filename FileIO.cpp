@@ -22,7 +22,6 @@ vector <string> FileIO::read()
     while (getline (MyReadFile, myText)) {
    
         // Output the text from the file
-        //std::cout << myText << endl;
         lineList.push_back(myText);
     
     }

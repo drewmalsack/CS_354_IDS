@@ -52,8 +52,8 @@ std::vector <std::string> sysCalls::resourceCollect()
     std::string token;
     std::vector <std::string> lines;
 
-    auto start = 0U;
-    auto end = s.find(delim);
+    int start = 0U;
+    int end = s.find(delim);
     int i=0;
     while (end != std::string::npos)
     {

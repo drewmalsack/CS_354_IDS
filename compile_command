@@ -1,0 +1,1 @@
+g++ main.cpp FileIO.h FileIO.cpp SysLogFormatter.h SysLogFormatter.cpp sysCall.h sysCalls.cpp database.h database.cpp -lmysqlclient
