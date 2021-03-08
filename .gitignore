@@ -7,3 +7,5 @@ a.out
 FileIO.h.gch
 hash.h.gch
 SysLogFormatter.h.gch
+.vscode/c_cpp_properties.json
+.vscode/settings.json

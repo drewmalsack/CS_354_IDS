@@ -12,16 +12,16 @@ Code, Compile, Run and Debug online from anywhere in world.
 #include <vector>
 #include "FileIO.h"
 #include "SysLogFormatter.h"
-#include "hash.h"
+#include "sysCalls.h"
 
-using namespace std;
+//using namespace std;
 
 int main(int argc, char *argv[])
 {
     
     SysLogFormatter format;
-    vector <string> myList;
-    hash table;
+    std::vector <std::string> myList;
+    sysCalls table;
     /*
     if(argc == 1)
     {
@@ -57,7 +57,8 @@ int main(int argc, char *argv[])
     */
     FileIO file("test.txt");
     
-    myList = file.read();
-    table.initialHash(myList);
+    //myList = file.read();
+    //table.initialHash(myList);
+    table.resourceCollect();
     return 0;
 }
