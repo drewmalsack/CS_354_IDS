@@ -1,0 +1,4 @@
+RuleID		RuleLevel	RuleEvent
+0001		Level_1		User refreshed page
+0002		Level_2		Username not registered
+0003		Level_3		User entered incorrect Password three times
