@@ -1,11 +1,3 @@
-/******************************************************************************
-
-Welcome to GDB Online.
-GDB online is an online compiler and debugger tool for C, C++, Python, PHP, Ruby, 
-C#, VB, Perl, Swift, Prolog, Javascript, Pascal, HTML, CSS, JS
-Code, Compile, Run and Debug online from anywhere in world.
-
-*******************************************************************************/
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
@@ -25,65 +17,93 @@ Code, Compile, Run and Debug online from anywhere in world.
 
 void parseSysLog()
 {
+	/*
+	* setting up variables and class instances 
+	*/
     SysLogFormatter format;
     database data;
-    FileIO readIn("/var/log/syslog");
-    std::vector <std::string> Lines;
+    FileIO readIn("/var/log/syslog"); //reads in lines from the syslog
+    std::vector <std::string> Lines; 
     MYSQL *conn;
 	MYSQL_RES *res;
 	MYSQL_ROW row;
-    data.mysql_details.server = "localhost";
+    data.mysql_details.server = "localhost"; //these are the login details for my database setup
 	data.mysql_details.user = "andrew";
 	data.mysql_details.password = "7nry6395";
 	data.mysql_details.database = "IDS";
-	conn = data.mysql_connection_setup();
+	conn = data.mysql_connection_setup(); //this creates a connection to the database
 
-    Lines = readIn.read();
+    Lines = readIn.read(); // this returns a vector of type string that holds all the lines from the syslog
 
-	std::string protoDate = Lines.back().substr(0,14);
-	std::string month;
+	/*
+	* This giant mess is me trying to get a correctly formatted timestamp for my mysql table
+	* this is mysql timestamp formatting fyi
+	*/
+
+	std::string protoDate = Lines.back().substr(0,15); //all time relavent data in the syslog is in the first 15ish line
+	std::string month; //i dont give 2 shits about months after this class is over which is why i only went through may
 	if(protoDate.substr(0, 2) == "Mar")
 		month = "03";
 	else if(protoDate.substr(0, 2) == "Apr")
 		month = "04";
 	else	
 		month = "05";
-	std::string day = protoDate.substr(4,5);
-	if(day.find(" ") != std::string::npos)
-		day.replace(day.find(" "), day.find(" "), "0");
-	std::string times = protoDate.substr(7);
-	std::string date = "2021-"+month+"-"+day+" "+times;
+	std::string day = protoDate.substr(4,2);
+	if(day.find(" ") != std::string::npos) // the timestamp format requires 2 digits for the day
+		day.replace(0, 1, "0");				//  so this if statment "should" add a 0 to the number if its below 10
+	std::string times = protoDate.substr(7); //the time in hours minutes and seconds is already correctly formated so we can just take it 
+	std::string date = "2021-"+month+"-"+day+" "+times; //this should end up being a correctly formatted timestamp
 
-    Lines = format.outputCSV(Lines);
-	srand(time(NULL));
+	
+    Lines = format.outputCSV(Lines); //this formats the lines in what i guessed was proper csv formatting, it probably isnt right though
+	srand(time(NULL)); //this sets a seed for random numbers
+	/*
+	* the next few lines just comes up with a random number between 1 and 1000 so i can get somewhat unique table names for each log
+	*/
 	int randNum = (rand() %1000 +1);
 	std::ostringstream ostr;
 	ostr << randNum;
-	std::string name = "syslog"+ostr.str();
-	//std::cout << name << std::endl;
+	std::string name = "syslog"+ostr.str(); //ends up being syslog166 or something to that effect, this will be the table name that holds
+	//std::cout << name << std::endl;  			the syslog lines
 	
+	//this next line hold the command that actually creates our table
 	std::string com = "create table "+name+" (ID int not null auto_increment, Line varchar(255), primary key (ID));";
 	char char_arr[com.length()+1];
 	strcpy(char_arr, com.c_str());
 	
+	//the execut query function takes an array of type char so the last 2 lines just take the string and turn it into a char array
+	//this next line executes our command and creates the table 
 	data.mysql_execute_query(conn, char_arr);
-	
-    for(std::vector<std::string>::iterator t = Lines.begin(); t< Lines.end()-1; t++)
+
+	//this for loop should add all our lines from the syslog vector to the table we created
+    for(std::vector<std::string>::iterator t = Lines.begin(); t< Lines.end(); t++)
     {
         com = "insert into "+ name+" (Line) values ("+*t+");";
 		std::cout << *t << std::endl;
-		//strcpy(char_arr, com.c_str());
+		strcpy(char_arr, com.c_str());
 		//data.mysql_execute_query(conn, char_arr);
     }
+	
+	//these next lines add a row to a table that holds names and timestamps of all our syslog tables so we can find them by timestamp
+	//its also where i use the timestamp i tried to make with the ugly block of code above so that may be one reason im getting issues
 	com = "insert into SyslogTableNames(TableName, StartTime, EndTime) values ("+name+", "+date+", CURRENT_TIMESTAMP());";
+	std::cout << com << std::endl;
 	strcpy(char_arr, com.c_str());
-	data.mysql_execute_query(conn, char_arr);
+	//data.mysql_execute_query(conn, char_arr);
 	
 }
 
 int main(int argc, char *argv[])
 {
-    
+    /*
+	*
+	* feel free to ignore everything in the main method as its all just garbage test code
+	* the call to parseSysLog is at the end
+	*
+	*
+	*
+	*
+	*/
     SysLogFormatter format;
     std::vector <std::string> myList;
     sysCalls table;

@@ -5,7 +5,7 @@
 #include <string>
 #include "sysCalls.h"
 
-
+//this function takes a bash command and returns the output, i copied it from stackoverflow so dont ask me what each line does
 std::string sysCalls::sysCall(const char* cmd)
 {
     char buffer[128];
@@ -24,6 +24,7 @@ std::string sysCalls::sysCall(const char* cmd)
     return result;
 }
 
+//this hashes each file from the file name given to it and returns a vector holding them
 std::vector <std::string> sysCalls::initialHash(std::vector <std::string> fileList)
 {
     char* char_arr;
@@ -32,31 +33,37 @@ std::vector <std::string> sysCalls::initialHash(std::vector <std::string> fileLi
     while(fileList.size() != 0)
     {
         str_obj = "sha256sum "+fileList.back();
-        char_arr = &str_obj[0];
-        hashList.push_back(sysCall(char_arr));
-        fileList.pop_back();
+        char_arr = &str_obj[0]; //again the command we use, uses a char array not a string so we convert
+        hashList.push_back(sysCall(char_arr)); //pushes the output to a vector to be returned 
+        fileList.pop_back(); //deletes the last line of the original vector
     }
 
     return hashList;
 }
 
+//this method is supposed to rehash things to check against our original hashes to see if a file has changed
+//i have yet to implement it, im doing all my database stuff so far in the main method so idk if this shoud even stay here
+//or if i can use the initail hash method and do all the comparing in the main method
 int sysCalls::reHash(std::vector <std::string> fileList)
 {
     return 1;
 }
 
+//this collects resources using the vmstat command and returns a vector
 std::vector <std::string> sysCalls::resourceCollect()
 {
-    std::string s = sysCall("vmstat 1 3");
-    std::string delim = "\n";
-    std::string token;
-    std::vector <std::string> lines;
+    std::string s = sysCall("vmstat 1 3"); //the numbers need to change here
+    std::string delim = "\n"; //the string that is returned has line breaks 
+    std::string token;         // so i use them to break the string into multiple strings
+    std::vector <std::string> lines; //so i can put them seperatly into a vector
 
     int start = 0U;
     int end = s.find(delim);
     int i=0;
+    //this loops through the returned string to split it apart and pushes it to a vector
     while (end != std::string::npos)
     {
+        //i didnt think the first line of output was necesary to i ignore it
         if(i==0)
         {
             start = end + delim.length();
