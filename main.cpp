@@ -40,11 +40,12 @@ void parseSysLog()
 	* this is mysql timestamp formatting fyi
 	*/
 
-	std::string protoDate = Lines.back().substr(0,15); //all time relavent data in the syslog is in the first 15ish line
+	std::string protoDate = Lines.front().substr(0,15); //all time relavent data in the syslog is in the first 15ish line
 	std::string month; //i dont give 2 shits about months after this class is over which is why i only went through may
-	if(protoDate.substr(0, 2) == "Mar")
+
+	if(protoDate.substr(0, 3) == "Mar")
 		month = "03";
-	else if(protoDate.substr(0, 2) == "Apr")
+	else if(protoDate.substr(0, 3) == "Apr")
 		month = "04";
 	else	
 		month = "05";
@@ -74,22 +75,22 @@ void parseSysLog()
 	//the execut query function takes an array of type char so the last 2 lines just take the string and turn it into a char array
 	//this next line executes our command and creates the table 
 	data.mysql_execute_query(conn, char_arr);
-
 	//this for loop should add all our lines from the syslog vector to the table we created
-    for(std::vector<std::string>::iterator t = Lines.begin(); t< Lines.end(); t++)
+
+    while(Lines.size()!=0)
     {
-        com = "insert into "+ name+" (Line) values ("+*t+");";
-		std::cout << *t << std::endl;
+        com = "insert into "+name+" (Line) values (\""+Lines.back()+"\");";
+		char char_arr[com.length()+1];
 		strcpy(char_arr, com.c_str());
-		//data.mysql_execute_query(conn, char_arr);
+		data.mysql_execute_query(conn, char_arr);
+		Lines.pop_back();
     }
-	
 	//these next lines add a row to a table that holds names and timestamps of all our syslog tables so we can find them by timestamp
 	//its also where i use the timestamp i tried to make with the ugly block of code above so that may be one reason im getting issues
-	com = "insert into SyslogTableNames(TableName, StartTime, EndTime) values ("+name+", "+date+", CURRENT_TIMESTAMP());";
-	std::cout << com << std::endl;
+	com = "insert into SyslogTableNames(TableName, StartTime, EndTime) values (\""+name+"\", \""+date+"\", CURRENT_TIMESTAMP());";
+	char_arr[com.length()+1];
 	strcpy(char_arr, com.c_str());
-	//data.mysql_execute_query(conn, char_arr);
+	data.mysql_execute_query(conn, char_arr);
 	
 }
 
