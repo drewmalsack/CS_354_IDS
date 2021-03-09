@@ -7,6 +7,7 @@
 #include <cstring>
 #include <sstream>
 #include <string>
+#include <thread>
 #include "FileIO.h"
 #include "SysLogFormatter.h"
 #include "sysCalls.h"
@@ -20,18 +21,23 @@ void parseSysLog()
 	/*
 	* setting up variables and class instances 
 	*/
+	database data;
     SysLogFormatter format;
-    database data;
     FileIO readIn("/var/log/syslog"); //reads in lines from the syslog
     std::vector <std::string> Lines; 
-    MYSQL *conn;
+	MYSQL *conn;
 	MYSQL_RES *res;
 	MYSQL_ROW row;
-    data.mysql_details.server = "localhost"; //these are the login details for my database setup
+
+	//struct for the database connection details, replace with your login info
+	data.mysql_details.server = "localhost";
 	data.mysql_details.user = "andrew";
 	data.mysql_details.password = "7nry6395";
 	data.mysql_details.database = "IDS";
-	conn = data.mysql_connection_setup(); //this creates a connection to the database
+
+	//conn holds the connection to the database, pass to query function 
+	conn = data.mysql_connection_setup();
+
 
     Lines = readIn.read(); // this returns a vector of type string that holds all the lines from the syslog
 
@@ -94,6 +100,55 @@ void parseSysLog()
 	
 }
 
+void parseSysResources()
+{
+	database data;
+    MYSQL *conn;
+	MYSQL_RES *res;
+	MYSQL_ROW row;
+	sysCalls call;
+	std::vector <std::string> resources;
+
+	//struct for the database connection details, replace with your login info
+	data.mysql_details.server = "localhost";
+	data.mysql_details.user = "andrew";
+	data.mysql_details.password = "7nry6395";
+	data.mysql_details.database = "IDS";
+
+	//conn holds the connection to the database, pass to query function 
+	conn = data.mysql_connection_setup();
+
+	srand(time(NULL)); //this sets a seed for random numbers
+	/*
+	* the next few lines just comes up with a random number between 1 and 1000 so i can get somewhat unique table names for each log
+	*/
+	int randNum = (rand() %1000 +1);
+	std::ostringstream ostr;
+	ostr << randNum;
+	std::string name = "sysres"+ostr.str();
+
+	std::string com = "insert into SysResourceTableNames(TableName) values (\""+name+"\");";
+	char char_arr[com.length()+1];
+	strcpy(char_arr, com.c_str());
+	data.mysql_execute_query(conn, char_arr);
+
+	com = "create table "+name+" (ID int not null auto_increment, Line varchar(255), primary key (ID));";
+	char_arr[com.length()+1];
+	strcpy(char_arr, com.c_str());
+	data.mysql_execute_query(conn, char_arr);
+
+	resources = call.resourceCollect();
+
+	while(resources.size() !=0)
+	{
+		com = "insert into "+name+"(Line) values (\""+resources.back()+"\");";
+		char char_arr2[com.length()+1];
+		strcpy(char_arr2, com.c_str());
+		data.mysql_execute_query(conn, char_arr2);
+		resources.pop_back();
+	}
+}
+
 int main(int argc, char *argv[])
 {
     /*
@@ -112,7 +167,7 @@ int main(int argc, char *argv[])
     MYSQL *conn;
 	MYSQL_RES *res;
 	MYSQL_ROW row;
-/*
+
 	//struct for the database connection details, replace with your login info
 	data.mysql_details.server = "localhost";
 	data.mysql_details.user = "andrew";
@@ -121,7 +176,8 @@ int main(int argc, char *argv[])
 
 	//conn holds the connection to the database, pass to query function 
 	conn = data.mysql_connection_setup();
-
+	database *dataB = &data;
+/*
 	//res being the result from the database, replace string with whatever query you want to run
 	res = data.mysql_execute_query(conn, "select * from FileHash;");
 
@@ -139,7 +195,10 @@ int main(int argc, char *argv[])
     */
     
     
-    parseSysLog();
+   
+	std::thread sysres(parseSysResources);
+	parseSysLog(); 
+	sysres.join();
     
     return 0;
 }
