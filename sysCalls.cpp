@@ -33,20 +33,15 @@ std::vector <std::string> sysCalls::initialHash(std::vector <std::string> fileLi
     while(fileList.size() != 0)
     {
         str_obj = "sha256sum "+fileList.back();
+        str_obj.erase(std::remove(str_obj.begin(), str_obj.end(), '\r'), str_obj.end());
+        //std::cout << str_obj << std::endl;
         char_arr = &str_obj[0]; //again the command we use, uses a char array not a string so we convert
+        //std::cout << char_arr << std::endl;
         hashList.push_back(sysCall(char_arr)); //pushes the output to a vector to be returned 
         fileList.pop_back(); //deletes the last line of the original vector
     }
 
     return hashList;
-}
-
-//this method is supposed to rehash things to check against our original hashes to see if a file has changed
-//i have yet to implement it, im doing all my database stuff so far in the main method so idk if this shoud even stay here
-//or if i can use the initail hash method and do all the comparing in the main method
-int sysCalls::reHash(std::vector <std::string> fileList)
-{
-    return 1;
 }
 
 //this collects resources using the vmstat command and returns a vector

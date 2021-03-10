@@ -97,6 +97,9 @@ void parseSysLog()
 	char_arr[com.length()+1];
 	strcpy(char_arr, com.c_str());
 	data.mysql_execute_query(conn, char_arr);
+
+	mysql_free_result(res);
+	mysql_close(conn);
 	
 }
 
@@ -147,6 +150,110 @@ void parseSysResources()
 		data.mysql_execute_query(conn, char_arr2);
 		resources.pop_back();
 	}
+
+	mysql_free_result(res);
+	mysql_close(conn);
+}
+
+void uploadHash()
+{
+	FileIO readIn("FileToHash.txt");
+	sysCalls hash;
+	std::vector <std::string> files = readIn.read();
+	std::string test;
+	std::string hashs;
+	std::string fileName;
+	std::string com;
+	files = hash.initialHash(files);
+	
+	database data;
+	MYSQL *conn;
+	MYSQL_RES *res;
+	MYSQL_ROW row;
+
+	//struct for the database connection details, replace with your login info
+	data.mysql_details.server = "localhost";
+	data.mysql_details.user = "andrew";
+	data.mysql_details.password = "7nry6395";
+	data.mysql_details.database = "IDS";
+
+	conn = data.mysql_connection_setup();
+
+	while(files.size()!=0)
+	{
+		test = files.back();
+		hashs = test.substr(0, 64);
+		fileName = test.substr(66);
+
+		com = "insert into FileHash (FileName, Hash) values (\""+fileName+"\", \""+hashs+"\");";
+		char char_arr[com.length()+1];
+		strcpy(char_arr, com.c_str());
+
+		data.mysql_execute_query(conn, char_arr);
+
+
+		files.pop_back();
+	}
+
+	mysql_free_result(res);
+	mysql_close(conn);
+
+}
+
+void checkHash()
+{
+	FileIO readIn("FileToHash.txt");
+	sysCalls hash;
+	std::vector <std::string> files = readIn.read();
+	std::string test;
+	std::string hashs;
+	std::string fileName;
+	std::string com;
+	files = hash.initialHash(files);
+	
+	database data;
+	MYSQL *conn;
+	MYSQL_RES *res;
+	MYSQL_ROW row;
+
+	//struct for the database connection details, replace with your login info
+	data.mysql_details.server = "localhost";
+	data.mysql_details.user = "andrew";
+	data.mysql_details.password = "7nry6395";
+	data.mysql_details.database = "IDS";
+
+	conn = data.mysql_connection_setup();
+
+	com = "select * from FileHash;";
+	char char_arr[com.length()+1];
+	strcpy(char_arr, com.c_str());
+
+	res = data.mysql_execute_query(conn, char_arr);
+
+	while((row = mysql_fetch_row(res)) != NULL)
+	{
+		test = files.back();
+		hashs = test.substr(0, 64);
+		fileName = test.substr(66);
+
+
+		//com = "select * from FileHash;";
+		//char char_arr[com.length()+1];
+		//strcpy(char_arr, com.c_str());
+
+		//data.mysql_execute_query(conn, char_arr);
+
+		if(fileName != row[1])
+			std::cout << "Name mismatch: " << row[1] << std::endl;
+		if(hashs != row[2])
+			std::cout << "Hash mismatch: " << row[1] << std::endl;
+		//std::cout << row[1] << row[2] << std::endl;
+
+		files.pop_back();
+	}
+
+	mysql_free_result(res);
+	mysql_close(conn);
 }
 
 int main(int argc, char *argv[])
@@ -196,9 +303,10 @@ int main(int argc, char *argv[])
     
     
    
-	std::thread sysres(parseSysResources);
-	parseSysLog(); 
-	sysres.join();
-    
+	//std::thread sysres(parseSysResources);
+	//parseSysLog(); 
+	//sysres.join();
+	//uploadHash();
+	checkHash();
     return 0;
 }
