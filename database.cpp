@@ -27,7 +27,7 @@ MYSQL* database::mysql_connection_setup(){
 
 		/*
 		ifstream fileReader(Alert_Rules.txt, ios::in);
-		int ruleNum;
+		string ruleNum;
 		string rule;
 
 		fileReader >> ruleNum;
