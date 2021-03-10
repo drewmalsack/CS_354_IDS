@@ -39,6 +39,17 @@ MYSQL* database::mysql_connection_setup(){
 		}
 		fileReader.close();
 		
+		if(!mysql_details.password){
+			std::cout << ruleAlert[3] << std::endl;
+			exit(1);
+		} else if(!mysql_details.user){
+			std::cout << ruleAlert[2] << std::endl;
+			exit(1);
+		} else {
+			std::cout << "Connection Error: " << mysql_error(connection) << std::endl;
+			exit(1);
+		}
+		
 		*/
 	}
 	
