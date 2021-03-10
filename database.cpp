@@ -49,8 +49,8 @@ MYSQL* database::mysql_connection_setup(){
 			std::cout << "Connection Error: " << mysql_error(connection) << std::endl;
 			exit(1);
 		}
-		
 		*/
+		
 	}
 	
 	return connection;
