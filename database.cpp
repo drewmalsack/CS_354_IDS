@@ -11,6 +11,35 @@ MYSQL* database::mysql_connection_setup(){
 	{
 		std::cout << "Connection Error: " << mysql_error(connection) << std::endl;
 		exit(1);
+
+		/*
+		if(!mysql_details.password){
+			std::cout << "Password Entered incorretly" << std::endl;
+			exit(1);
+		} else if(!mysql_details.user){
+			std::cout << "Username not registered" << std::endl;
+			exit(1);
+		} else {
+			std::cout << "Connection Error: " << mysql_error(connection) << std::endl;
+			exit(1);
+		}
+		*/
+
+		/*
+		ifstream fileReader(Alert_Rules.txt, ios::in);
+		int ruleNum;
+		string rule;
+
+		fileReader >> ruleNum;
+		fileReader >> rule;
+
+		string ruleAlert = new string[4];
+		for(int i = 0; i = 4; i++){
+		fileReader >> ruleAlert[i];
+		}
+		fileReader.close();
+		
+		*/
 	}
 	
 	return connection;
