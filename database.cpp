@@ -28,7 +28,7 @@ MYSQL* database::mysql_connection_setup(){
 
 		//This is closer to what is wanted, calls the text file that holds the rules if
 		//the connection fails. Then goes through a couple if-else loops to find the problem
-		//and return the relevant rule 
+		//and return the relevant rule -Tim Kent
 		/*
 		ifstream fileReader(Alert_Rules.txt, ios::in);
 		string ruleNum;

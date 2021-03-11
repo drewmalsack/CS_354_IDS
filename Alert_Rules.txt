@@ -1,4 +1,4 @@
 RuleID	RuleEvent
-0001	User_refreshed_page
+0001	File_Not_Found
 0002	Username_not_registered
 0003	User_entered_incorrect_Password
