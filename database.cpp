@@ -12,6 +12,7 @@ MYSQL* database::mysql_connection_setup(){
 		std::cout << "Connection Error: " << mysql_error(connection) << std::endl;
 		exit(1);
 
+		//brute force hard code not what you want. -Tim Kent
 		/*
 		if(!mysql_details.password){
 			std::cout << "Password Entered incorretly" << std::endl;
@@ -25,6 +26,9 @@ MYSQL* database::mysql_connection_setup(){
 		}
 		*/
 
+		//This is closer to what is wanted, calls the text file that holds the rules if
+		//the connection fails. Then goes through a couple if-else loops to find the problem
+		//and return the relevant rule 
 		/*
 		ifstream fileReader(Alert_Rules.txt, ios::in);
 		string ruleNum;
