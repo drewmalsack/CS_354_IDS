@@ -12,15 +12,18 @@
 #include "SysLogFormatter.h"
 #include "sysCalls.h"
 #include "database.h"
+#include "Network.h"
 
 //using namespace std;
-
+Network net;
+int Network::stop = 0;
 void parseSysLog()
 {
 	/*
 	* setting up variables and class instances 
 	*/
 	database data;
+	Network net;
 	SysLogFormatter format;
 	FileIO readIn("/var/log/syslog"); //reads in lines from the syslog
 	std::vector<std::string> Lines;
@@ -308,6 +311,12 @@ void checkHash()
 	mysql_close(conn);
 }
 
+std::string TDump()
+{
+	std::string result = net.TDump();
+	return result;
+}
+
 int main(int argc, char *argv[])
 {
 	/*
@@ -367,20 +376,24 @@ int main(int argc, char *argv[])
 
 		if (choice == 1)
 			parseSysLog();
-
 		else if (choice == 2)
-		{
 			std::thread sysres(parseSysResources);
-			sysres.join();
-		}
 		else if (choice == 3)
 			checkHash();
 		else if (choice == 4)
 			uploadHash();
 		else if (choice == 5)
 			updateHash();
+		else if (choice == 6)
+		{
+			std::string temp = TDump();
+			std::cout << temp.substr(0, 12)<< std::endl;
+		}
 		else if (choice == 0)
+		{
+			//sysres.join();
 			break;
+		}
 	}
 	return 0;
 }

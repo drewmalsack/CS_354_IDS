@@ -47,7 +47,7 @@ std::vector <std::string> sysCalls::initialHash(std::vector <std::string> fileLi
 //this collects resources using the vmstat command and returns a vector
 std::vector <std::string> sysCalls::resourceCollect()
 {
-    std::string s = sysCall("vmstat 20 30"); //the numbers need to change here
+    std::string s = sysCall("vmstat 20 30"); //the numbers need to change here vmstat 20 30
     std::string delim = "\n"; //the string that is returned has line breaks 
     std::string token;         // so i use them to break the string into multiple strings
     std::vector <std::string> lines; //so i can put them seperatly into a vector
