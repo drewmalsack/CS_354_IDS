@@ -1,11 +1,17 @@
 #include <iostream>
 #include <mysql/mysql.h>
+#include <ctime>
 #include "database.h"
 
 // creates a connection to the database and returns it for use in query function
 MYSQL* database::mysql_connection_setup(){
 	MYSQL *connection = mysql_init(NULL);
 	
+	int failedLoginCount = 0;
+	time_t now;
+	double timeCheck;
+	double lastTime;
+
 	if(!mysql_real_connect(connection, mysql_details.server, mysql_details.user, mysql_details.password,
 	mysql_details.database, 0, NULL, 0))
 	{
@@ -15,10 +21,43 @@ MYSQL* database::mysql_connection_setup(){
 		//brute force hard code not what you want. -Tim Kent
 		/*
 		if(!mysql_details.password){
+
 			std::cout << "Password Entered incorretly" << std::endl;
+
+			//Time-window based correlation
+			time(&now);
+			if(lastTime != null){
+				timeCheck = difftime(now, lastTime);
+				if(timeCheck >= 300){
+					std::cout << "Errors occured within within 5 minutes of each other" << std::endl;
+				}
+			}
+			lastTime = now;
+
+			//Added counter to count the number of failed attempts
+			failedLoginCount++;
+			if(failedLoginCount = 3){
+				std::cout << "Password Entered incorretly 3 times" << std::endl;
+			}
 			exit(1);
 		} else if(!mysql_details.user){
 			std::cout << "Username not registered" << std::endl;
+
+			//Time-window based correlation
+			time(&now);
+			if(lastTime != null){
+				timeCheck = difftime(now, lastTime);
+				if(timeCheck >= 300){
+					std::cout << "Errors occured within within 5 minutes of each other" << std::endl;
+				}
+			}
+			lastTime = now;
+
+			//Added counter to count the number of failed attempts
+			failedLoginCount++;
+			if(failedLoginCount = 3){
+				std::cout << "Username Entered incorretly 3 times" << std::endl;
+			}
 			exit(1);
 		} else {
 			std::cout << "Connection Error: " << mysql_error(connection) << std::endl;
@@ -45,9 +84,41 @@ MYSQL* database::mysql_connection_setup(){
 		
 		if(!mysql_details.password){
 			std::cout << ruleAlert[3] << std::endl;
+
+			//Time-window based correlation
+			time(&now);
+			if(lastTime != null){
+				timeCheck = difftime(now, lastTime);
+				if(timeCheck >= 300){
+					std::cout << "Errors occured within within 5 minutes of each other" << std::endl;
+				}
+			}
+			lastTime = now;
+
+			//Added counter to count the number of failed attempts 
+			failedLoginCount++;
+			if(failedLoginCount = 3){
+				std::cout << "Password Entered incorretly 3 times" << std::endl;
+			}
 			exit(1);
 		} else if(!mysql_details.user){
 			std::cout << ruleAlert[2] << std::endl;
+
+			//Time-window based correlation
+			time(&now);
+			if(lastTime != null){
+				timeCheck = difftime(now, lastTime);
+				if(timeCheck >= 300){
+					std::cout << "Errors occured within within 5 minutes of each other" << std::endl;
+				}
+			}
+			lastTime = now;
+
+			//Added counter to count the number of failed attempts
+			failedLoginCount++;
+			if(failedLoginCount = 3){
+				std::cout << "Username Entered incorretly 3 times" << std::endl;
+			}
 			exit(1);
 		} else {
 			std::cout << "Connection Error: " << mysql_error(connection) << std::endl;
