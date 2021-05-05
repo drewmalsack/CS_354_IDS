@@ -16,7 +16,7 @@ std::string Network::TDump()
     std::string cmd = "tcpdump";
     std::string result;
     char buffer[1024];
-    int count=0;
+    int count = 0;
     /*auto start = std::chrono::system_clock::now();
     auto duration_in_seconds = std::chrono::duration<double>(start.time_since_epoch());
 
@@ -38,11 +38,14 @@ std::string Network::TDump()
     }
     return result;
     */
-    FILE * pipef = popen(cmd.c_str(), "r");
-    if(pipef){
-        while(!feof(pipef) && count<5){
+    FILE *pipef = popen(cmd.c_str(), "r");
+    if (pipef)
+    {
+        while (!feof(pipef) && count < 20)
+        {
             int res;
-            if((res = fread(buffer, /*note order here*/ 1, sizeof(buffer), pipef)) > 0){
+            if ((res = fread(buffer, /*note order here*/ 1, sizeof(buffer), pipef)) > 0)
+            {
                 std::string block(buffer, res);
                 result += buffer;
                 count++;

@@ -8,6 +8,7 @@
 #include <sstream>
 #include <string>
 #include <thread>
+#include <unistd.h>
 #include "FileIO.h"
 #include "SysLogFormatter.h"
 #include "sysCalls.h"
@@ -23,7 +24,6 @@ void parseSysLog()
 	* setting up variables and class instances 
 	*/
 	database data;
-	Network net;
 	SysLogFormatter format;
 	FileIO readIn("/var/log/syslog"); //reads in lines from the syslog
 	std::vector<std::string> Lines;
@@ -311,10 +311,77 @@ void checkHash()
 	mysql_close(conn);
 }
 
-std::string TDump()
+void TDump()
 {
+	/*
+	* setting up variables and class instances 
+	*/
+	database data;
+	MYSQL *conn;
+	MYSQL_RES *res;
+	MYSQL_ROW row;
+
+	//struct for the database connection details, replace with your login info
+	data.mysql_details.server = "localhost";
+	data.mysql_details.user = "andrew";
+	data.mysql_details.password = "7nry6395";
+	data.mysql_details.database = "IDS";
+
+	//conn holds the connection to the database, pass to query function
+	conn = data.mysql_connection_setup();
+
+	srand(time(NULL)); //this sets a seed for random numbers
+	/*
+	* the next few lines just comes up with a random number between 1 and 1000 so i can get somewhat unique table names for each log
+	*/
+	int randNum = (rand() % 1000 + 1);
+	std::ostringstream ostr;
+	ostr << randNum;
+	std::string name = "tcpdump" + ostr.str(); //this will be the table name that holds the tcpdump lines
+
+	//this next line hold the command that actually creates our table
+	std::string com = "create table " + name + " (ID int not null auto_increment, Time varchar(255), IP varchar(255), Flags Varchar(255), Message varchar(255), primary key (ID));";
+	char char_arr[com.length() + 1];
+	strcpy(char_arr, com.c_str());
+
+	//the execut query function takes an array of type char so the last 2 lines just take the string and turn it into a char array
+	//this next line executes our command and creates the table
+	data.mysql_execute_query(conn, char_arr);
+
 	std::string result = net.TDump();
-	return result;
+	std::string time;
+	std::string ip;
+	std::string flags;
+	std::string message;
+	std::string line;
+	int index = result.find("\n");
+	int count = 0;
+	while (index != std::string::npos)
+	{
+		line = result.substr(0, index);
+		time = line.substr(0, line.find(" "));
+		if (line.find("IP") == std::string::npos)
+		{
+
+			message = line.substr(line.find(" "));
+		}
+		else
+		{
+			ip = line.substr(line.find("IP") + 2, line.find("Flags") - (line.find("IP") + 2) - 1);
+			flags = line.substr(line.find("Flags") + 5, line.find("]") - (line.find("Flags") + 5) + 1);
+			message = line.substr(line.find(","));
+		}
+		result.erase(0, index + 1);
+		index = result.find("\n");
+		com = "insert into " + name + " (Time, IP, Flags, Message) Values (\"" + time + "\",\"" + ip + "\",\"" + flags + "\",\"" + message + "\");";
+		char char_arr2[com.length() + 1];
+		strcpy(char_arr2, com.c_str());
+		data.mysql_execute_query(conn, char_arr2);
+	}
+	com = "insert into TCPDumpTableNames (TableName) Values (\"" + name + "\");";
+	char char_arr3[com.length() + 1];
+	strcpy(char_arr3, com.c_str());
+	data.mysql_execute_query(conn, char_arr3);
 }
 
 int main(int argc, char *argv[])
@@ -386,8 +453,7 @@ int main(int argc, char *argv[])
 			updateHash();
 		else if (choice == 6)
 		{
-			std::string temp = TDump();
-			std::cout << temp.substr(0, 12)<< std::endl;
+			TDump();
 		}
 		else if (choice == 0)
 		{
